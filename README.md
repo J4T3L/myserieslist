@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍿 MyCineList — Your Ultimate TV Series Tracker
 
-## Getting Started
+Welcome to **MyCineList**! 🚀 Aplikasi tracker serial TV super *kece badai* yang bikin pengalaman binge-watching kamu makin tertata, rapi, dan terorganisir. Gak ada lagi cerita lupa udah nonton episode berapa atau bingung mau nonton apa akhir pekan ini!
 
-First, run the development server:
+## ✨ Fitur Kece Badai (Features)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- 🔍 **Live Search Anti-Lemot**: Cari serial favoritmu secepat kilat (powered by TV Maze API) dengan sistem debounce biar nggak bikin browser nge-lag!
+- 🎲 **Surprise Me!**: Bingung mau nonton apa? Klik tombol ajaib "Acak 🔄" di sidebar dan biarkan takdir memilih tontonan terbaik buat kamu.
+- 📊 **Watchlist Stats**: Pantau seberapa *no-life* (atau produktif) dirimu dengan dashboard statistik pribadi (Watching, Completed, Plan to Watch).
+- 👑 **Sistem 3-Role (RBAC)**: Gak cuma buat user biasa, aplikasi ini punya hierarki kelas kakap:
+  - 👤 **User**: Track tontonan pribadi sesuka hati.
+  - 🛡️ **Admin**: Lihat statistik global platform.
+  - 🦸‍♂️ **SuperSU**: Akses level Dewa (Root)! Bisa *inspect* watchlist orang lain, ubah jabatan akun, hingga hapus user dari sistem.
+- 💾 **Local-First & Backup (JSON)**: Datamu sepenuhnya aman di browser (Local Storage). Takut hilang karena bersihin cache? Tinggal *Ekspor* ke JSON, dan *Impor* kembali kapan saja!
+- 🎨 **UI/UX Premium**: Desain estetik ala Netflix, elemen *glassmorphism*, dark mode yang elegan, plus efek transisi yang super *smooth*.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: [Next.js](https://nextjs.org/) (App Router) dengan Turbopack ⚡
+- **UI Library**: React 19 ⚛️
+- **Styling**: Vanilla CSS (CSS Variables, Grid, Flexbox) — *Murni skill tanpa library CSS berat!*
+- **Database**: Local Storage & Session Storage (Zero-config backend!)
+- **Data Source**: [TVMaze API](https://www.tvmaze.com/api) 📺
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Cara Menjalankan (Quick Start)
 
-## Learn More
+Penasaran pengen coba *run* di komputermu? Gampang banget!
 
-To learn more about Next.js, take a look at the following resources:
+1. **Buka Terminal & Masuk ke Direktori**
+   Pastikan kamu sudah berada di folder project ini.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install semua dependencies**
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Jalankan Development Server**
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. **Buka di Browser**
+   Buka `http://localhost:3000` dan nikmati antarmuka yang memanjakan mata! 🎉
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔑 Akun Uji Coba (Bawaan)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Nggak mau ribet daftar akun baru? Langsung aja login pakai akun "rahasia" ini:
+
+| Role | Username | Password | Deskripsi Akses |
+| :--- | :--- | :--- | :--- |
+| **SuperSU** | `supersu` | `supersu123` | Punya akses dashboard SuperSU (Level Dewa) |
+| **Admin** | `admin` | `admin123` | Punya akses manajemen Admin biasa |
+| **User** | `user` | `user123` | Akun penonton TV Series standar |
+
+---
+
+<div align="center">
+  Dibuat dengan 💻, ☕, dan penuh gaya. <br>
+  <strong>Binge-watch responsibly! 🍿</strong>
+</div>

@@ -1,0 +1,30 @@
+﻿
+> zatweb@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.10 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 9.5s
+  Running TypeScript ...
+  Finished TypeScript in 4.9s ...
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/7) ...
+  Generating static pages using 9 workers (1/7) 
+  Generating static pages using 9 workers (3/7) 
+  Generating static pages using 9 workers (5/7) 
+Γ£ô Generating static pages using 9 workers (7/7) in 986ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /admin
+Γö£ ╞Æ /shows/[id]
+Γö£ Γùï /stats
+Γöö Γùï /watchlist
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
