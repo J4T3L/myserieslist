@@ -196,57 +196,70 @@ export default function ShowDetailPage({ params }: PageProps) {
     };
 
     return (
-        <div className="tab-content-enter">
-            {/* GUEST WARNING BAR */}
-            {!currentUser && (
-                <div
+        <div className="tab-content-enter details-page-root" style={{ position: "relative" }}>
+            {/* Cinematic Backdrop Banner */}
+            {show.image?.original && (
+                <div 
+                    className="details-backdrop"
                     style={{
-                        background: "rgba(251, 191, 36, 0.1)",
-                        border: "1px solid rgba(251, 191, 36, 0.2)",
-                        borderRadius: "6px",
-                        padding: "12px 16px",
-                        marginBottom: "24px",
-                        fontSize: "13px",
-                        color: "#fbbf24",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        backgroundImage: `url(${show.image.original})`
                     }}
                 >
-                    <span>Anda mengakses sebagai Tamu. Silakan masuk akun untuk melacak episode serial ini.</span>
-                    <button
-                        onClick={() => window.location.reload()}
-                        style={{
-                            background: "#fbbf24",
-                            color: "#000",
-                            border: "none",
-                            padding: "4px 10px",
-                            borderRadius: "4px",
-                            fontWeight: "700",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Login / Daftar
-                    </button>
+                    <div className="details-backdrop-overlay"></div>
                 </div>
             )}
 
-            {/* BACK NAVIGATION */}
-            <div style={{ marginBottom: "20px" }}>
-                <Link
-                    href="/"
-                    style={{
-                        fontSize: "13px",
-                        color: "var(--text-secondary)",
-                        textDecoration: "none",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                    }}
-                >
-                    ← Kembali ke Discover
-                </Link>
-            </div>
+            <div className="details-page-content-wrapper" style={{ position: "relative", zIndex: 5 }}>
+                {/* GUEST WARNING BAR */}
+                {!currentUser && (
+                    <div
+                        style={{
+                            background: "rgba(251, 191, 36, 0.1)",
+                            border: "1px solid rgba(251, 191, 36, 0.2)",
+                            borderRadius: "6px",
+                            padding: "12px 16px",
+                            marginBottom: "24px",
+                            fontSize: "13px",
+                            color: "#fbbf24",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                        }}
+                    >
+                        <span>Anda mengakses sebagai Tamu. Silakan masuk akun untuk melacak episode serial ini.</span>
+                        <button
+                            onClick={() => window.location.reload()}
+                            style={{
+                                background: "#fbbf24",
+                                color: "#000",
+                                border: "none",
+                                padding: "4px 10px",
+                                borderRadius: "4px",
+                                fontWeight: "700",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Login / Daftar
+                        </button>
+                    </div>
+                )}
+
+                {/* BACK NAVIGATION */}
+                <div style={{ marginBottom: "20px" }}>
+                    <Link
+                        href="/"
+                        style={{
+                            fontSize: "13px",
+                            color: "var(--text-secondary)",
+                            textDecoration: "none",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                        }}
+                    >
+                        ← Kembali ke Discover
+                    </Link>
+                </div>
 
             {/* DETAIL PAGE ROOT GRID */}
             <div className="modal-body details-grid">
@@ -292,7 +305,7 @@ export default function ShowDetailPage({ params }: PageProps) {
                     {currentUser && (
                         <div
                             style={{
-                                background: "var(--surface-color)",
+                                background: "var(--card-bg)",
                                 padding: "20px",
                                 borderRadius: "8px",
                                 border: "1px solid var(--surface-border)",
@@ -317,14 +330,15 @@ export default function ShowDetailPage({ params }: PageProps) {
                                         }}
                                         style={{
                                             width: "100%",
-                                            padding: "8px 12px",
-                                            background: "#333",
-                                            border: "none",
-                                            borderRadius: "4px",
-                                            color: "#fff",
+                                            padding: "8px 14px",
+                                            background: "var(--card-bg)",
+                                            border: "1px solid var(--surface-border)",
+                                            borderRadius: "30px",
+                                            color: "var(--text-primary)",
                                             fontSize: "13px",
-                                            fontWeight: "600",
+                                            fontWeight: "700",
                                             cursor: "pointer",
+                                            outline: "none",
                                         }}
                                     >
                                         <option value="">+ Tambah ke Daftar...</option>
@@ -349,14 +363,15 @@ export default function ShowDetailPage({ params }: PageProps) {
                                                 }
                                                 style={{
                                                     width: "100%",
-                                                    padding: "8px 12px",
-                                                    background: "#333",
-                                                    border: "none",
-                                                    borderRadius: "4px",
-                                                    color: "#fff",
+                                                    padding: "8px 14px",
+                                                    background: "var(--card-bg)",
+                                                    border: "1px solid var(--surface-border)",
+                                                    borderRadius: "30px",
+                                                    color: "var(--text-primary)",
                                                     fontSize: "13px",
-                                                    fontWeight: "600",
+                                                    fontWeight: "700",
                                                     cursor: "pointer",
+                                                    outline: "none",
                                                 }}
                                             >
                                                 <option value="">Pilih Rating...</option>
@@ -474,7 +489,7 @@ export default function ShowDetailPage({ params }: PageProps) {
                                 </div>
 
                                 {/* NETWORK / CHANNEL DETAILS */}
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", background: "var(--surface-color)", padding: "16px", borderRadius: "8px", border: "1px solid var(--surface-border)", fontSize: "13px" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", background: "var(--card-bg)", padding: "16px", borderRadius: "8px", border: "1px solid var(--surface-border)", fontSize: "13px" }}>
                                     <div>
                                         <span style={{ color: "var(--text-muted)" }}>Ditayangkan di:</span>
                                         <strong style={{ display: "block", color: "#fff", marginTop: "4px" }}>
@@ -499,12 +514,12 @@ export default function ShowDetailPage({ params }: PageProps) {
                                             placeholder="Tulis opini, catatan nonton, atau review pribadi Anda di sini..."
                                             style={{
                                                 width: "100%",
-                                                height: "100px",
-                                                background: "#222",
-                                                border: "none",
-                                                borderRadius: "6px",
-                                                color: "#fff",
-                                                padding: "10px",
+                                                height: "110px",
+                                                background: "var(--card-bg)",
+                                                border: "1px solid var(--surface-border)",
+                                                borderRadius: "12px",
+                                                color: "var(--text-primary)",
+                                                padding: "14px",
                                                 resize: "none",
                                                 outline: "none",
                                                 fontSize: "13px",
@@ -564,14 +579,15 @@ export default function ShowDetailPage({ params }: PageProps) {
                                             value={selectedSeason}
                                             onChange={(e) => setSelectedSeason(parseInt(e.target.value))}
                                             style={{
-                                                padding: "6px 12px",
-                                                background: "#333",
-                                                border: "none",
-                                                borderRadius: "4px",
-                                                color: "#fff",
+                                                padding: "6px 16px",
+                                                background: "var(--card-bg)",
+                                                border: "1px solid var(--surface-border)",
+                                                borderRadius: "30px",
+                                                color: "var(--text-primary)",
                                                 fontSize: "13px",
                                                 fontWeight: "700",
                                                 cursor: "pointer",
+                                                outline: "none",
                                             }}
                                         >
                                             {seasons.map((s) => (
@@ -690,39 +706,29 @@ export default function ShowDetailPage({ params }: PageProps) {
                                         Informasi pemeran tidak tersedia.
                                     </div>
                                 ) : (
-                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "16px", maxHeight: "500px", overflowY: "auto", paddingRight: "6px" }}>
+                                    <div className="cast-grid-wrapper">
                                         {cast.map((item) => (
                                             <div
                                                 key={`${item.person.id}-${item.character.id}`}
-                                                style={{
-                                                    background: "var(--surface-color)",
-                                                    padding: "10px",
-                                                    borderRadius: "6px",
-                                                    border: "1px solid var(--surface-border)",
-                                                    textAlign: "center",
-                                                }}
+                                                className="cast-profile-card"
                                             >
-                                                <img
-                                                    src={item.person.image?.medium || "/placeholder.jpg"}
-                                                    alt={item.person.name}
-                                                    style={{
-                                                        width: "70px",
-                                                        height: "70px",
-                                                        borderRadius: "50%",
-                                                        objectFit: "cover",
-                                                        margin: "0 auto 8px auto",
-                                                        display: "block",
-                                                    }}
-                                                />
-                                                <div style={{ fontWeight: "700", fontSize: "12px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={item.person.name}>
-                                                    {item.person.name}
+                                                <div className="cast-avatar-frame">
+                                                    <img
+                                                        src={item.person.image?.medium || "/placeholder.jpg"}
+                                                        alt={item.person.name}
+                                                    />
                                                 </div>
-                                                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "2px", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={item.character.name}>
-                                                    sebagai {item.character.name}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                                <div className="cast-names">
+                                                    <div className="cast-actor-name" title={item.person.name}>
+                                                        {item.person.name}
+                                                     </div>
+                                                     <div className="cast-character-name" title={item.character.name}>
+                                                         as {item.character.name}
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         ))}
+                                     </div>
                                 )}
                             </div>
                         )}
@@ -862,6 +868,7 @@ export default function ShowDetailPage({ params }: PageProps) {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }

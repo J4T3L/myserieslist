@@ -26,7 +26,7 @@ export default function ShowCard({ show, style }: ShowCardProps) {
 
     return (
         <div
-            className="show-card"
+            className={`show-card ${trackStatus ? `card-status-${trackStatus}` : ""}`}
             onClick={handleCardClick}
             style={{ minWidth: "160px", flexShrink: 0, ...style }}
         >

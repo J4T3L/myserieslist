@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useApp, Show } from "@/context/AppContext";
 import ShowCard from "@/components/ShowCard";
 
@@ -308,268 +309,195 @@ export default function Home() {
         </div>
       </div>
 
-      {/* SPLIT LAYOUT: MAIN GRID VS TOP RANKINGS SIDEBAR */}
-      <div className="discover-layout">
-        {/* Left Column: Grid */}
-        <div style={{ overflow: "hidden" }}>
-          {searchQuery || selectedGenre !== "All" ? (
-            /* GRID VIEW (For search or genre filtering) */
-            <>
-              <div className="controls-bar" style={{ flexWrap: "wrap", gap: "10px" }}>
-                <h2 className="section-title">
-                  {searchQuery ? `Hasil Pencarian untuk "${searchQuery}"` : `${selectedGenre} Series`}
-                </h2>
+      {/* SEARCH / FILTER GRID MODE VS DEFAULT PREMIUM STREAM LAYOUT */}
+      {searchQuery || selectedGenre !== "All" ? (
+        <div className="search-grid-layout tab-content-enter">
+          <div className="controls-bar" style={{ flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+            <h2 className="section-title">
+              {searchQuery ? `Hasil Pencarian untuk "${searchQuery}"` : `${selectedGenre} Series`}
+            </h2>
 
-                <div className="sort-select-wrapper">
-                  <select value={discoverSort} onChange={(e) => setDiscoverSort(e.target.value)}>
-                    <option value="rating-desc">Rating: High to Low</option>
-                    <option value="rating-asc">Rating: Low to High</option>
-                    <option value="name-asc">Name: A-Z</option>
-                    <option value="premiered-desc">Premiered: Newest</option>
-                    <option value="premiered-asc">Premiered: Oldest</option>
-                  </select>
+            <div className="sort-select-wrapper">
+              <select value={discoverSort} onChange={(e) => setDiscoverSort(e.target.value)}>
+                <option value="rating-desc">Rating: High to Low</option>
+                <option value="rating-asc">Rating: Low to High</option>
+                <option value="name-asc">Name: A-Z</option>
+                <option value="premiered-desc">Premiered: Newest</option>
+                <option value="premiered-asc">Premiered: Oldest</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            renderShimmerGrid()
+          ) : getFilteredDiscoverShows().length === 0 ? (
+            <div style={{ textAlign: "center", padding: "80px 20px", color: "var(--text-secondary)" }}>
+              Tidak ada serial TV ditemukan.
+            </div>
+          ) : (
+            <div className="shows-grid">
+              {getFilteredDiscoverShows().map((show) => (
+                <ShowCard key={show.id} show={show} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* HOME BROWSE STREAM SECTION (FULL WIDTH AND STREAMING SYSTEM) */
+        <div className="home-stream-layout tab-content-enter">
+          
+          {/* Dashboard Summary Panel (Welcome Message + Watchlist stats + Surprise Me) */}
+          <div className="dashboard-summary-panel">
+            {/* Quick Watchlist Stats */}
+            {currentUser ? (
+              <div className="dashboard-summary-card summary-stats">
+                <h4 className="summary-card-title">Statistik Watchlist</h4>
+                <div className="summary-stats-grid">
+                  <div className="summary-stat-box">
+                    <span className="summary-stat-value">{watchlist.length}</span>
+                    <span className="summary-stat-label">Total</span>
+                  </div>
+                  <div className="summary-stat-box box-watching">
+                    <span className="summary-stat-value">{watchlist.filter((i) => i.trackerStatus === "watching").length}</span>
+                    <span className="summary-stat-label">Tonton</span>
+                  </div>
+                  <div className="summary-stat-box box-completed">
+                    <span className="summary-stat-value">{watchlist.filter((i) => i.trackerStatus === "completed").length}</span>
+                    <span className="summary-stat-label">Selesai</span>
+                  </div>
                 </div>
               </div>
+            ) : (
+              <div className="dashboard-summary-card summary-cta">
+                <h4 className="summary-card-title">Mulai Melacak Serial</h4>
+                <p>Simpan serial TV, catat progres episode, dan buat ulasan personal Anda.</p>
+                <button
+                  onClick={() => {
+                    setAuthTab("login");
+                    setIsAuthModalOpen(true);
+                  }}
+                  className="hero-btn"
+                  style={{ marginTop: 0, padding: "8px 16px", fontSize: "12px", background: "var(--netflix-red)" }}
+                >
+                  Sign In / Register
+                </button>
+              </div>
+            )}
 
-              {loading ? (
-                renderShimmerGrid()
-              ) : getFilteredDiscoverShows().length === 0 ? (
-                <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-secondary)" }}>
-                  Tidak ada serial TV ditemukan.
+            {/* Surprise Me Widget */}
+            {randomShow && (
+              <div className="dashboard-summary-card summary-surprise">
+                <div className="surprise-header-row">
+                  <h4 className="summary-card-title">Surprise Me! 🎲</h4>
+                  <button onClick={handlePickRandomShow} className="refresh-btn-pill">Acak 🔄</button>
                 </div>
-              ) : (
-                <div className="shows-grid">
-                  {getFilteredDiscoverShows().map((show) => (
+                <Link href={`/shows/${randomShow.id}`} className="surprise-card-item">
+                  <img src={randomShow.image?.medium || "/placeholder.jpg"} alt={randomShow.name} />
+                  <div className="surprise-card-info">
+                    <div className="surprise-card-name">{randomShow.name}</div>
+                    <div className="surprise-card-rating">★ {randomShow.rating.average || "N/A"}</div>
+                  </div>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {loading ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "20px" }}>
+              <div className="netflix-row"><h3 className="row-title">Loading trending...</h3>{renderShimmerRow()}</div>
+              <div className="netflix-row"><h3 className="row-title">Loading rankings...</h3>{renderShimmerRow()}</div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginTop: "20px" }}>
+              
+              {/* Row 1: Top 5 Rankings (Premium Horizontal Numbered List) */}
+              {sidebarRankings.length > 0 && (
+                <div className="netflix-row ranking-row">
+                  <h3 className="row-title">Top 5 Serial Terpopuler</h3>
+                  <div className="row-scroll" style={{ paddingLeft: "10px" }}>
+                    {sidebarRankings.map((show, idx) => (
+                      <div key={show.id} className="ranking-card-container">
+                        <div className="ranking-large-num">{idx + 1}</div>
+                        <ShowCard show={show} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Row 2: Trending Now */}
+              <div className="netflix-row">
+                <h3 className="row-title">Trending Now</h3>
+                <div className="row-scroll">
+                  {discoverShows.slice(0, 15).map((show) => (
                     <ShowCard key={show.id} show={show} />
                   ))}
                 </div>
-              )}
-            </>
-          ) : (
-            /* NETFLIX ROW SCROLLERS (Default Browse) */
-            <>
-              {loading ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                  <div className="netflix-row"><h3 className="row-title">Loading trending...</h3>{renderShimmerRow()}</div>
-                  <div className="netflix-row"><h3 className="row-title">Loading genres...</h3>{renderShimmerRow()}</div>
-                </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {/* Row 1: Trending Now */}
-                  <div className="netflix-row">
-                    <h3 className="row-title">Trending Now</h3>
-                    <div className="row-scroll">
-                      {discoverShows.slice(0, 15).map((show) => (
+              </div>
+
+              {/* Row 3: Action & Adventure */}
+              {discoverShows.filter((s) => s.genres.includes("Action") || s.genres.includes("Adventure")).length > 0 && (
+                <div className="netflix-row">
+                  <h3 className="row-title">Action & Adventure</h3>
+                  <div className="row-scroll">
+                    {discoverShows
+                      .filter((s) => s.genres.includes("Action") || s.genres.includes("Adventure"))
+                      .slice(0, 15)
+                      .map((show) => (
                         <ShowCard key={show.id} show={show} />
                       ))}
-                    </div>
                   </div>
-
-                  {/* Row 2: Action & Adventure */}
-                  {discoverShows.filter((s) => s.genres.includes("Action") || s.genres.includes("Adventure")).length > 0 && (
-                    <div className="netflix-row">
-                      <h3 className="row-title">Action & Adventure</h3>
-                      <div className="row-scroll">
-                        {discoverShows
-                          .filter((s) => s.genres.includes("Action") || s.genres.includes("Adventure"))
-                          .slice(0, 15)
-                          .map((show) => (
-                            <ShowCard key={show.id} show={show} />
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Row 3: Comedy Classics */}
-                  {discoverShows.filter((s) => s.genres.includes("Comedy")).length > 0 && (
-                    <div className="netflix-row">
-                      <h3 className="row-title">Comedy Classics</h3>
-                      <div className="row-scroll">
-                        {discoverShows
-                          .filter((s) => s.genres.includes("Comedy"))
-                          .slice(0, 15)
-                          .map((show) => (
-                            <ShowCard key={show.id} show={show} />
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Row 4: Sci-Fi & Fantasy */}
-                  {discoverShows.filter((s) => s.genres.includes("Science-Fiction") || s.genres.includes("Fantasy")).length > 0 && (
-                    <div className="netflix-row">
-                      <h3 className="row-title">Sci-Fi & Fantasy</h3>
-                      <div className="row-scroll">
-                        {discoverShows
-                          .filter((s) => s.genres.includes("Science-Fiction") || s.genres.includes("Fantasy"))
-                          .slice(0, 15)
-                          .map((show) => (
-                            <ShowCard key={show.id} show={show} />
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Row 5: Crime & Mystery */}
-                  {discoverShows.filter((s) => s.genres.includes("Crime") || s.genres.includes("Mystery") || s.genres.includes("Thriller")).length > 0 && (
-                    <div className="netflix-row">
-                      <h3 className="row-title">Crime & Mystery</h3>
-                      <div className="row-scroll">
-                        {discoverShows
-                          .filter((s) => s.genres.includes("Crime") || s.genres.includes("Mystery") || s.genres.includes("Thriller"))
-                          .slice(0, 15)
-                          .map((show) => (
-                            <ShowCard key={show.id} show={show} />
-                          ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
-            </>
-          )}
-        </div>
 
-        {/* Right Column: Top rankings sidebar */}
-        <div className="ranking-sidebar">
-          <h3 className="section-title" style={{ paddingLeft: "12px", fontSize: "18px" }}>Top Rankings</h3>
-          <div className="ranking-list">
-            {sidebarRankings.map((show, idx) => (
-              <a
-                key={show.id}
-                href={`/shows/${show.id}`}
-                className={`ranking-item rank-${idx + 1}`}
-                style={{ textDecoration: "none" }}
-              >
-                <div className="ranking-num-badge">{idx + 1}</div>
-                <img
-                  src={show.image?.medium || ""}
-                  alt={show.name}
-                  className="ranking-poster"
-                />
-                <div className="ranking-info">
-                  <div className="ranking-name" title={show.name}>
-                    {show.name}
-                  </div>
-                  <div className="ranking-score">
-                    ★ {show.rating.average || "N/A"}
+              {/* Row 4: Comedy Classics */}
+              {discoverShows.filter((s) => s.genres.includes("Comedy")).length > 0 && (
+                <div className="netflix-row">
+                  <h3 className="row-title">Comedy Classics</h3>
+                  <div className="row-scroll">
+                    {discoverShows
+                      .filter((s) => s.genres.includes("Comedy"))
+                      .slice(0, 15)
+                      .map((show) => (
+                        <ShowCard key={show.id} show={show} />
+                      ))}
                   </div>
                 </div>
-              </a>
-            ))}
-          </div>
+              )}
 
-          {/* CTA / Watchlist Stats Widget */}
-          {currentUser ? (
-            <div className="sidebar-widget stats-widget" style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <h4 style={{ fontSize: "14px", fontWeight: "800", color: "#fff", marginBottom: "12px" }}>Statistik Watchlist Anda</h4>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: "800", color: "#fff" }}>{watchlist.length}</div>
-                  <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>Total Serial</div>
-                </div>
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: "800", color: "var(--netflix-red)" }}>
-                    {watchlist.filter((i) => i.trackerStatus === "watching").length}
+              {/* Row 5: Sci-Fi & Fantasy */}
+              {discoverShows.filter((s) => s.genres.includes("Science-Fiction") || s.genres.includes("Fantasy")).length > 0 && (
+                <div className="netflix-row">
+                  <h3 className="row-title">Sci-Fi & Fantasy</h3>
+                  <div className="row-scroll">
+                    {discoverShows
+                      .filter((s) => s.genres.includes("Science-Fiction") || s.genres.includes("Fantasy"))
+                      .slice(0, 15)
+                      .map((show) => (
+                        <ShowCard key={show.id} show={show} />
+                      ))}
                   </div>
-                  <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>Ditonton</div>
                 </div>
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: "800", color: "#10b981" }}>
-                    {watchlist.filter((i) => i.trackerStatus === "completed").length}
-                  </div>
-                  <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>Selesai</div>
-                </div>
-                <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px", borderRadius: "6px", textAlign: "center" }}>
-                  <div style={{ fontSize: "18px", fontWeight: "800", color: "#fbbf24" }}>
-                    {watchlist.filter((i) => i.trackerStatus === "plantowatch").length}
-                  </div>
-                  <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>Plan to Watch</div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="sidebar-widget cta-widget" style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <h4 style={{ fontSize: "14px", fontWeight: "800", color: "#fff", marginBottom: "8px" }}>Mulai Melacak Serial</h4>
-              <p style={{ fontSize: "11px", color: "var(--text-muted)", lineHeight: "1.5", marginBottom: "12px" }}>
-                Simpan serial TV, catat progres episode, dan buat ulasan personal Anda.
-              </p>
-              <button
-                onClick={() => {
-                  setAuthTab("login");
-                  setIsAuthModalOpen(true);
-                }}
-                className="hero-btn"
-                style={{
-                  width: "100%",
-                  padding: "8px 12px",
-                  fontSize: "12px",
-                  justifyContent: "center",
-                  background: "var(--netflix-red)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "4px"
-                }}
-              >
-                Masuk / Daftar Akun
-              </button>
-            </div>
-          )}
+              )}
 
-          {/* Surprise Me Widget */}
-          {randomShow && (
-            <div className="sidebar-widget surprise-widget" style={{ marginTop: "24px", paddingTop: "24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <h4 style={{ fontSize: "14px", fontWeight: "800", color: "#fff" }}>Surprise Me! 🎲</h4>
-                <button
-                  onClick={handlePickRandomShow}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--text-muted)",
-                    fontSize: "11px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px"
-                  }}
-                  title="Acak serial lain"
-                >
-                  Acak 🔄
-                </button>
-              </div>
-              <a
-                href={`/shows/${randomShow.id}`}
-                style={{
-                  display: "flex",
-                  gap: "12px",
-                  background: "rgba(255, 255, 255, 0.02)",
-                  padding: "8px",
-                  borderRadius: "8px",
-                  textDecoration: "none",
-                  border: "1px solid transparent",
-                  transition: "var(--transition-premium)"
-                }}
-                className="ranking-item"
-              >
-                <img
-                  src={randomShow.image?.medium || ""}
-                  alt={randomShow.name}
-                  style={{ width: "40px", height: "55px", objectFit: "cover", borderRadius: "4px" }}
-                />
-                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", minWidth: 0 }}>
-                  <div style={{ fontSize: "13px", fontWeight: "700", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {randomShow.name}
-                  </div>
-                  <div style={{ fontSize: "11px", color: "var(--gold-color)", marginTop: "4px" }}>
-                    ★ {randomShow.rating.average || "N/A"}
+              {/* Row 6: Crime & Mystery */}
+              {discoverShows.filter((s) => s.genres.includes("Crime") || s.genres.includes("Mystery") || s.genres.includes("Thriller")).length > 0 && (
+                <div className="netflix-row">
+                  <h3 className="row-title">Crime & Mystery</h3>
+                  <div className="row-scroll">
+                    {discoverShows
+                      .filter((s) => s.genres.includes("Crime") || s.genres.includes("Mystery") || s.genres.includes("Thriller"))
+                      .slice(0, 15)
+                      .map((show) => (
+                        <ShowCard key={show.id} show={show} />
+                      ))}
                   </div>
                 </div>
-              </a>
+              )}
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

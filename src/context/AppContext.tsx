@@ -67,6 +67,8 @@ interface AppContextType {
     authTab: "login" | "signup";
     settingsOpen: boolean;
     searchQuery: string;
+    theme: "dark" | "light";
+    toggleTheme: () => void;
     setSearchQuery: (query: string) => void;
     setIsAuthModalOpen: (open: boolean) => void;
     setAuthTab: (tab: "login" | "signup") => void;
@@ -106,6 +108,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
 
     const showToast = useCallback((message: string, type: "success" | "info" | "warning" = "success") => {
         const id = Date.now() + Math.random();
@@ -119,6 +122,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
     }, []);
 
+    // --- DYNAMIC THEME SYSTEM ---
+    useEffect(() => {
+        const savedTheme = localStorage.getItem("theme") as "dark" | "light" | null;
+        if (savedTheme) {
+            document.documentElement.setAttribute("data-theme", savedTheme);
+            setTimeout(() => {
+                setTheme(savedTheme);
+            }, 0);
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+        }
+    }, []);
+
+    const toggleTheme = useCallback(() => {
+        const nextTheme = theme === "dark" ? "light" : "dark";
+        setTheme(nextTheme);
+        localStorage.setItem("theme", nextTheme);
+        document.documentElement.setAttribute("data-theme", nextTheme);
+        showToast(`Mode diubah ke ${nextTheme === "dark" ? "Gelap (Dark)" : "Terang (Light)"}`, "info");
+    }, [theme, showToast]);
+
     // --- INITIALIZATION FROM DB ---
     useEffect(() => {
         if (status === "authenticated") {
@@ -131,7 +155,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 })
                 .catch(err => console.error("Failed to fetch watchlist", err));
         } else if (status === "unauthenticated") {
-            setWatchlist([]);
+            setTimeout(() => {
+                setWatchlist([]);
+            }, 0);
         }
     }, [status]);
 
@@ -502,6 +528,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
                 authTab,
                 settingsOpen,
                 searchQuery,
+                theme,
+                toggleTheme,
                 setSearchQuery,
                 setIsAuthModalOpen,
                 setAuthTab,
